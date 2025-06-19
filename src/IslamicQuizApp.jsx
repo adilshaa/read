@@ -51,9 +51,9 @@ const IslamicQuizApp = () => {
   const [isBackgroundTransitioning, setIsBackgroundTransitioning] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Auto-change theme every 15 seconds with smooth transition
   const renderParticles = () => (
     <div className="absolute inset-0">
+      {/* Paste original particle divs here */}
       <div className="absolute top-20 left-1/4 w-2 h-2 rounded-full bg-white/20 animate-pulse"></div>
       <div className="absolute top-32 right-1/3 w-3 h-3 rounded-full bg-white/15 animate-bounce"></div>
       <div className="absolute top-1/2 left-1/6 w-1 h-1 rounded-full bg-white/25 animate-ping"></div>
@@ -63,10 +63,10 @@ const IslamicQuizApp = () => {
     </div>
   );
 
+  // Auto-change theme every 15 seconds with smooth transition
   useEffect(() => {
     const themeInterval = setInterval(() => {
-      setIsTransitioning(true); // For overlay, card effects
-
+      setIsTransitioning(true); // For overlay, card effects (remains)
       setNextThemeIndex((currentTheme + 1) % themes.length);
       setIsBackgroundTransitioning(true); // Start background cross-fade
 
@@ -74,27 +74,22 @@ const IslamicQuizApp = () => {
       const initialEffectDelay = 500;
 
       setTimeout(() => {
-        // Mid-point: overlay is up, card might be transforming. Backgrounds are cross-fading.
+        // Mid-point for overlay/card effects
         setTimeout(() => {
-          // Background cross-fade should be complete.
+          // Background cross-fade should be complete
           setCurrentTheme(prevCurrent => (prevCurrent + 1) % themes.length);
-          setIsBackgroundTransitioning(false); // Backgrounds settled.
-
-          // Optional: setNextThemeIndex for the next cycle explicitly if needed,
-          // though it's set at interval start based on the new currentTheme.
-          // setNextThemeIndex(( (currentTheme + 1) % themes.length )); // currentTheme is updated now
+          setIsBackgroundTransitioning(false); // Backgrounds settled
 
           setTimeout(() => {
             setIsTransitioning(false); // End overlay, card effects
           }, 100);
 
         }, backgroundFadeDuration);
-
       }, initialEffectDelay);
 
     }, 15000);
     return () => clearInterval(themeInterval);
-  }, [themes.length, currentTheme]);
+  }, [themes.length, currentTheme]); // Add currentTheme to dependency array
 
   // Sample Islamic quiz data
   const quizzes = [
@@ -252,11 +247,11 @@ const IslamicQuizApp = () => {
       </div>
 
       {/* Main Quiz Card */}
-      <div className="relative z-10 min-h-screen flex items-start sm:items-center justify-center px-4 pt-4 pb-8 sm:p-4">
+      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
         <div
           className={`w-full max-w-md bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden transition-all duration-1000 ${
             isTransitioning ? "opacity-80 scale-95" : "opacity-100 scale-100"
-          } flex flex-col h-full sm:h-auto`}
+          }`}
         >
           {/* Question Section */}
           <div
@@ -317,7 +312,7 @@ const IslamicQuizApp = () => {
           </div>
 
           {/* Answer Section */}
-          <div className="flex-1 min-h-0 p-5">
+          <div className="h-96 p-5">
             {/* Search Bar */}
             <div className="relative mb-4">
               <Search
@@ -335,7 +330,7 @@ const IslamicQuizApp = () => {
 
             {/* Answer List */}
             <div
-              className="space-y-2.5 h-full overflow-y-auto pr-2"
+              className="space-y-2.5 h-72 overflow-y-auto pr-2"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
