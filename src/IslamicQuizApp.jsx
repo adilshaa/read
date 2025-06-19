@@ -247,7 +247,7 @@ const IslamicQuizApp = () => {
             isTransitioning ? "opacity-50" : "opacity-100"
           }`}
         >
-          {themes[currentTheme].name}
+          {themes[isTransitioning ? nextThemeIndex : currentTheme].name}
         </span>
       </div>
 
@@ -261,7 +261,7 @@ const IslamicQuizApp = () => {
           {/* Question Section */}
           <div
             className={`h-64 bg-gradient-to-r ${
-              themes[currentTheme].cardClass
+              themes[isTransitioning ? nextThemeIndex : currentTheme].cardClass
             } p-6 flex flex-col items-center justify-center text-white relative transition-all duration-1000 ${
               isShuffling ? "animate-pulse" : ""
             }`}
