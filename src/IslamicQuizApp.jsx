@@ -252,11 +252,11 @@ const IslamicQuizApp = () => {
       </div>
 
       {/* Main Quiz Card */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
+      <div className="relative z-10 min-h-screen flex items-start sm:items-center justify-center px-4 pt-4 pb-8 sm:p-4">
         <div
           className={`w-full max-w-md bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden transition-all duration-1000 ${
             isTransitioning ? "opacity-80 scale-95" : "opacity-100 scale-100"
-          }`}
+          } flex flex-col h-full sm:h-auto`}
         >
           {/* Question Section */}
           <div
@@ -317,7 +317,7 @@ const IslamicQuizApp = () => {
           </div>
 
           {/* Answer Section */}
-          <div className="h-96 p-5">
+          <div className="flex-1 min-h-0 p-5">
             {/* Search Bar */}
             <div className="relative mb-4">
               <Search
@@ -335,7 +335,7 @@ const IslamicQuizApp = () => {
 
             {/* Answer List */}
             <div
-              className="space-y-2.5 h-72 overflow-y-auto pr-2"
+              className="space-y-2.5 h-full overflow-y-auto pr-2"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
