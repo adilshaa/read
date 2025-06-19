@@ -8,6 +8,35 @@ import {
   Sparkles,
 } from "lucide-react";
 
+// Dynamic color themes that change over time
+const themes = [
+  {
+    name: "Deep Ocean",
+    bgClass: "from-blue-900 via-indigo-900 to-purple-900",
+    cardClass: "from-blue-500/80 to-indigo-600/80",
+  },
+  {
+    name: "Emerald Forest",
+    bgClass: "from-emerald-900 via-green-900 to-teal-900",
+    cardClass: "from-emerald-500/80 to-green-600/80",
+  },
+  {
+    name: "Sunset Glow",
+    bgClass: "from-orange-900 via-red-900 to-pink-900",
+    cardClass: "from-orange-500/80 to-red-600/80",
+  },
+  {
+    name: "Midnight",
+    bgClass: "from-slate-900 via-gray-900 to-zinc-900",
+    cardClass: "from-slate-500/80 to-gray-600/80",
+  },
+  {
+    name: "Aurora",
+    bgClass: "from-purple-900 via-violet-900 to-fuchsia-900",
+    cardClass: "from-purple-500/80 to-violet-600/80",
+  },
+];
+
 const IslamicQuizApp = () => {
   const [isShuffling, setIsShuffling] = useState(false);
   const [currentQuiz, setCurrentQuiz] = useState(null);
@@ -18,52 +47,54 @@ const IslamicQuizApp = () => {
   const [shuffleIndex, setShuffleIndex] = useState(0);
   const [flipDirection, setFlipDirection] = useState("");
   const [currentTheme, setCurrentTheme] = useState(0);
+  const [nextThemeIndex, setNextThemeIndex] = useState(1 % themes.length);
+  const [isBackgroundTransitioning, setIsBackgroundTransitioning] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Dynamic color themes that change over time
-  const themes = [
-    {
-      name: "Deep Ocean",
-      bgClass: "from-blue-900 via-indigo-900 to-purple-900",
-      cardClass: "from-blue-500/80 to-indigo-600/80",
-    },
-    {
-      name: "Emerald Forest",
-      bgClass: "from-emerald-900 via-green-900 to-teal-900",
-      cardClass: "from-emerald-500/80 to-green-600/80",
-    },
-    {
-      name: "Sunset Glow",
-      bgClass: "from-orange-900 via-red-900 to-pink-900",
-      cardClass: "from-orange-500/80 to-red-600/80",
-    },
-    {
-      name: "Midnight",
-      bgClass: "from-slate-900 via-gray-900 to-zinc-900",
-      cardClass: "from-slate-500/80 to-gray-600/80",
-    },
-    {
-      name: "Aurora",
-      bgClass: "from-purple-900 via-violet-900 to-fuchsia-900",
-      cardClass: "from-purple-500/80 to-violet-600/80",
-    },
-  ];
-
   // Auto-change theme every 15 seconds with smooth transition
+  const renderParticles = () => (
+    <div className="absolute inset-0">
+      <div className="absolute top-20 left-1/4 w-2 h-2 rounded-full bg-white/20 animate-pulse"></div>
+      <div className="absolute top-32 right-1/3 w-3 h-3 rounded-full bg-white/15 animate-bounce"></div>
+      <div className="absolute top-1/2 left-1/6 w-1 h-1 rounded-full bg-white/25 animate-ping"></div>
+      <div className="absolute top-3/4 right-1/4 w-2 h-2 rounded-full bg-white/20 animate-pulse"></div>
+      <div className="absolute top-1/3 right-1/6 w-1 h-1 rounded-full bg-white/30 animate-pulse"></div>
+      <div className="absolute bottom-1/4 left-1/3 w-2 h-2 rounded-full bg-white/15 animate-bounce"></div>
+    </div>
+  );
+
   useEffect(() => {
     const themeInterval = setInterval(() => {
-      setIsTransitioning(true);
+      setIsTransitioning(true); // For overlay, card effects
 
-      // Wait for fade out, then change theme, then fade in
+      setNextThemeIndex((currentTheme + 1) % themes.length);
+      setIsBackgroundTransitioning(true); // Start background cross-fade
+
+      const backgroundFadeDuration = 1000;
+      const initialEffectDelay = 500;
+
       setTimeout(() => {
-        setCurrentTheme((prev) => (prev + 1) % themes.length);
+        // Mid-point: overlay is up, card might be transforming. Backgrounds are cross-fading.
         setTimeout(() => {
-          setIsTransitioning(false);
-        }, 100);
-      }, 500);
+          // Background cross-fade should be complete.
+          setCurrentTheme(prevCurrent => (prevCurrent + 1) % themes.length);
+          setIsBackgroundTransitioning(false); // Backgrounds settled.
+
+          // Optional: setNextThemeIndex for the next cycle explicitly if needed,
+          // though it's set at interval start based on the new currentTheme.
+          // setNextThemeIndex(( (currentTheme + 1) % themes.length )); // currentTheme is updated now
+
+          setTimeout(() => {
+            setIsTransitioning(false); // End overlay, card effects
+          }, 100);
+
+        }, backgroundFadeDuration);
+
+      }, initialEffectDelay);
+
     }, 15000);
     return () => clearInterval(themeInterval);
-  }, [themes.length]);
+  }, [themes.length, currentTheme]);
 
   // Sample Islamic quiz data
   const quizzes = [
@@ -180,27 +211,26 @@ const IslamicQuizApp = () => {
     setCurrentQuiz(quizzes[0]);
   }, []);
 
-  const currentThemeData = themes[currentTheme];
-
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background with smooth transition */}
+      {/* Background Div 1: Current Theme (Fades Out) */}
       <div
-        className={`absolute inset-0 bg-gradient-to-br ${
-          currentThemeData.bgClass
-        } transition-all duration-1000 ease-in-out ${
-          isTransitioning ? "opacity-0" : "opacity-100"
+        key={`bg-current-${currentTheme}`}
+        className={`absolute inset-0 bg-gradient-to-br ${themes[currentTheme].bgClass} transition-opacity duration-1000 ease-in-out ${
+          isBackgroundTransitioning ? "opacity-0" : "opacity-100"
         }`}
       >
-        {/* Subtle floating particles - no waves */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-1/4 w-2 h-2 rounded-full bg-white/20 animate-pulse"></div>
-          <div className="absolute top-32 right-1/3 w-3 h-3 rounded-full bg-white/15 animate-bounce"></div>
-          <div className="absolute top-1/2 left-1/6 w-1 h-1 rounded-full bg-white/25 animate-ping"></div>
-          <div className="absolute top-3/4 right-1/4 w-2 h-2 rounded-full bg-white/20 animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/6 w-1 h-1 rounded-full bg-white/30 animate-pulse"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 rounded-full bg-white/15 animate-bounce"></div>
-        </div>
+        {renderParticles()}
+      </div>
+
+      {/* Background Div 2: Next Theme (Fades In) */}
+      <div
+        key={`bg-next-${nextThemeIndex}`}
+        className={`absolute inset-0 bg-gradient-to-br ${themes[nextThemeIndex].bgClass} transition-opacity duration-1000 ease-in-out ${
+          isBackgroundTransitioning ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        {renderParticles()}
       </div>
 
       {/* Dark overlay during transition */}
@@ -217,7 +247,7 @@ const IslamicQuizApp = () => {
             isTransitioning ? "opacity-50" : "opacity-100"
           }`}
         >
-          {currentThemeData.name}
+          {themes[currentTheme].name}
         </span>
       </div>
 
@@ -231,7 +261,7 @@ const IslamicQuizApp = () => {
           {/* Question Section */}
           <div
             className={`h-64 bg-gradient-to-r ${
-              currentThemeData.cardClass
+              themes[currentTheme].cardClass
             } p-6 flex flex-col items-center justify-center text-white relative transition-all duration-1000 ${
               isShuffling ? "animate-pulse" : ""
             }`}
